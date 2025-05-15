@@ -1,0 +1,26 @@
+version: '1.1'
+
+services:
+  api:
+    build: .
+    container_name: recipe_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/recipes
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    container_name: recipe_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

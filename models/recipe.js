@@ -1,24 +1,25 @@
-const mongoose = require('moongose');
+const mongoose = require('mongoose');
+
+const commentSchema = new mongoose.Schema({
+    user: { type: String, required: true },
+    text: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+});
+
 const recipeSchema = new mongoose.Schema({
-  name: String,
-  ingredients: [String],
-  instruction: String,
-  prepTime: String,
-  likes: {type: Number, default:0},
-  comments: [commentSchema],
-  ratings: [Number],
-  imageUrls: [String]
-}, {timeStamp: true});
+    name: { type: String, required: true },
+    ingredients: { type: [String], required: true },
+    instructions: { type: String, required: true },
+    prepTime: { type: String, required: true },
+    likes: { type: Number, default: 0 },
+    comments: [commentSchema],
+    ratings: [Number],
+    imageUrls: [String]
+}, { timestamps: true });
 
-const commentSection=new moongose.Schema({
-  user:String,
-  text: String,
-  createdAt: {type: Date, default: Date,now}
-})
+recipeSchema.virtual('averageRating').get(function () {
+    if (!this.ratings.length) return 0;
+    return this.ratings.reduce((sum, r) => sum + r, 0) / this.ratings.length;
+});
 
-recipeSchema.virtual('averageRating').get(function (){
-  if(!this.ratings.length) return 0;
-  return this.ratings.reduce((sum, r)=>sum+r, 0)/this.ratings.length;
-})
-
-module.exports=mongoose.model('Recipe, recipeSchema');
+module.exports = mongoose.model('Recipe', recipeSchema);
